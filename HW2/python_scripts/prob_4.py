@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random, argparse
 import sys
-from Pr6 import Softmax 
+#from Pr6 import Softmax 
 
 
 class Regression:
@@ -212,7 +212,7 @@ if __name__ == '__main__':
     learning_rate = 0.000001
     batch_size = 10
     alpha = 0.01
-    model = "L1"
+    model = "poisson"
     momentum = 0.005
 
     ## Problem 3-(2~4)

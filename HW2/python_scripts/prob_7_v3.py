@@ -5,7 +5,7 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Pr6 import Softmax
+from prob_6_v1 import Softmax
 
 
 def loadData(listOfTrainFilePath, testFilePath):
