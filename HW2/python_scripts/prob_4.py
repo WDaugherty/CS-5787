@@ -17,7 +17,7 @@ class Regression:
 
     def train(self, x_train, y_train, x_test, y_test):
         dim = x_train.shape[1]
-        self.weight = 0.001 * np.random.rand(dim)
+        self.weight = 0.0001 * np.random.rand(dim)
         trainLosses = []
         testLosses = []
         trainMSE = []
@@ -32,8 +32,8 @@ class Regression:
                 testLoss, _ = self.poissonRegression(x_test, y_test)
             trainLosses.append(trainLoss)
             testLosses.append(testLoss)
-            trainMSE.append(musicMSE(x_train.dot(self.weight), y_train))
-            testMSE.append(musicMSE(x_test.dot(self.weight), y_test))
+            trainMSE.append(musicMSE(x_train @ self.weight, y_train))
+            testMSE.append(musicMSE(x_test @ self.weight, y_test))
             print("{:d}\t->\tTrainL : {:.7f}\t|\tTestL : {:.7f}\t|\tTrainMSE : {:.7f}\t|\tTestMSE: {:.7f}"
                   .format(epoch, trainLoss, testLoss, trainMSE[-1], testMSE[-1]))
         return trainLosses, testLosses, trainMSE, testMSE
@@ -46,7 +46,12 @@ class Regression:
         for i in range(0, x.shape[0], self.batch_size):
             Xbatch = x[i: i + self.batch_size]
             ybatch = y[i: i + self.batch_size]
-            loss, dw = self.poissonRegression(Xbatch, ybatch)
+            if model == "L1":
+                loss, dw= self.computeLossL1(Xbatch, ybatch)
+            elif model == "L2":
+                loss, dw = self.computeLossL2(Xbatch, ybatch)
+            elif model == "poisson":
+                loss, dw = self.poissonRegression(Xbatch, ybatch)
             self.weight -= self.learning_rate * dw
             losses.append(loss)
         return np.sum(losses) / len(losses)
@@ -208,11 +213,11 @@ if __name__ == '__main__':
 
     print("---", len(trainYears), "----")
 
-    epochs = 50
+    epochs = 100
     learning_rate = 0.000001
-    batch_size = 10
-    alpha = 0.01
-    model = "poisson"
+    batch_size = 32
+    alpha = 0.00001
+    model = "L2"
     momentum = 0.005
 
     ## Problem 3-(2~4)
