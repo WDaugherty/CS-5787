@@ -1,88 +1,88 @@
-#Part 1
-import torch
-import sys
-import numpy as np
-from PIL import Image
-from torchvision import transforms
-from typing import List, Tuple
+# #Part 1
+# import torch
+# import sys
+# import numpy as np
+# from PIL import Image
+# from torchvision import transforms
+# from typing import List, Tuple
 
-class ImageClassifier:
-    """Image classifier based on a pre-trained PyTorch model.
+# class ImageClassifier:
+#     """Image classifier based on a pre-trained PyTorch model.
 
-    Args:
-        model_name (str): Name of the pre-trained PyTorch model to use.
-        pretrained (bool, optional): Whether to use pre-trained weights for the model. Defaults to True.
-    """
+#     Args:
+#         model_name (str): Name of the pre-trained PyTorch model to use.
+#         pretrained (bool, optional): Whether to use pre-trained weights for the model. Defaults to True.
+#     """
 
-    def __init__(self, model_name: str, pretrained: bool = True):
-        """Initialize the ImageClassifier object.
+#     def __init__(self, model_name: str, pretrained: bool = True):
+#         """Initialize the ImageClassifier object.
 
-        Loads the specified pre-trained PyTorch model and sets it to evaluation mode.
+#         Loads the specified pre-trained PyTorch model and sets it to evaluation mode.
 
-        Args:
-            model_name (str): Name of the pre-trained PyTorch model to use.
-            pretrained (bool, optional): Whether to use pre-trained weights for the model. Defaults to True.
-        """
-        # Load the model and set it to evaluation mode
-        self.model = torch.hub.load('pytorch/vision:v0.9.0', model_name, pretrained=pretrained)
-        self.model.eval()
+#         Args:
+#             model_name (str): Name of the pre-trained PyTorch model to use.
+#             pretrained (bool, optional): Whether to use pre-trained weights for the model. Defaults to True.
+#         """
+#         # Load the model and set it to evaluation mode
+#         self.model = torch.hub.load('pytorch/vision:v0.9.0', model_name, pretrained=pretrained)
+#         self.model.eval()
 
-        # Define the preprocessing steps to apply to the input image
-        self.preprocess = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ])
+#         # Define the preprocessing steps to apply to the input image
+#         self.preprocess = transforms.Compose([
+#             transforms.Resize(256),
+#             transforms.CenterCrop(224),
+#             transforms.ToTensor(),
+#             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+#         ])
         
-    def classify_image(self, image_path: str, topk: int = 3) -> Tuple[List[str], List[float]]:
-        """Classify an input image and return the top-k categories and their respective probabilities.
+#     def classify_image(self, image_path: str, topk: int = 3) -> Tuple[List[str], List[float]]:
+#         """Classify an input image and return the top-k categories and their respective probabilities.
 
-        Opens the input image at the specified path and applies the preprocessing steps
-        defined in the ImageClassifier object. Passes the preprocessed image through the
-        PyTorch model to obtain the output probabilities for each category. Returns the
-        top-k categories and their respective probabilities.
+#         Opens the input image at the specified path and applies the preprocessing steps
+#         defined in the ImageClassifier object. Passes the preprocessed image through the
+#         PyTorch model to obtain the output probabilities for each category. Returns the
+#         top-k categories and their respective probabilities.
 
-        Args:
-            image_path (str): Path to the input image file.
-            topk (int, optional): Number of top categories to return. Defaults to 3.
+#         Args:
+#             image_path (str): Path to the input image file.
+#             topk (int, optional): Number of top categories to return. Defaults to 3.
 
-        Returns:
-            Tuple[List[str], List[float]]: Tuple containing two lists: the top-k categories and their respective probabilities.
-        """
-        # Open the input image and apply the preprocessing steps
-        input_image = Image.open(image_path)
-        org = Image.open(image_path)
-        input_tensor = self.preprocess(org)
-        input_batch = input_tensor.unsqueeze(0) # create a mini-batch as expected by the model
+#         Returns:
+#             Tuple[List[str], List[float]]: Tuple containing two lists: the top-k categories and their respective probabilities.
+#         """
+#         # Open the input image and apply the preprocessing steps
+#         input_image = Image.open(image_path)
+#         org = Image.open(image_path)
+#         input_tensor = self.preprocess(org)
+#         input_batch = input_tensor.unsqueeze(0) # create a mini-batch as expected by the model
 
-        # Pass the preprocessed image through the model and obtain the output
-        with torch.no_grad():
-            output = self.model(input_batch)
-        probabilities = torch.nn.functional.softmax(output[0], dim=0)
+#         # Pass the preprocessed image through the model and obtain the output
+#         with torch.no_grad():
+#             output = self.model(input_batch)
+#         probabilities = torch.nn.functional.softmax(output[0], dim=0)
 
-        # Load the list of categories from the text file
-        with open("imagenet_classes.txt", "r") as f:
-            categories = [s.strip() for s in f.readlines()]
+#         # Load the list of categories from the text file
+#         with open("imagenet_classes.txt", "r") as f:
+#             categories = [s.strip() for s in f.readlines()]
 
-        # Obtain the top-k categories and their respective probabilities
-        topk_prob, topk_catid = torch.topk(probabilities, topk)
-        topk_categories = [categories[topk_catid[i]] for i in range(topk_prob.size(0))]
-        topk_probabilities = [topk_prob[i].item() for i in range(topk_prob.size(0))]
+#         # Obtain the top-k categories and their respective probabilities
+#         topk_prob, topk_catid = torch.topk(probabilities, topk)
+#         topk_categories = [categories[topk_catid[i]] for i in range(topk_prob.size(0))]
+#         topk_probabilities = [topk_prob[i].item() for i in range(topk_prob.size(0))]
 
-        # Return the top-k categories and their respective probabilities as a tuple of two lists
-        return topk_categories, topk_probabilities
+#         # Return the top-k categories and their respective probabilities as a tuple of two lists
+#         return topk_categories, topk_probabilities
 
-#Calls fpr part 1
+# #Calls for part 1
 
-# Create an instance of the ImageClassifier class
-classifier = ImageClassifier(model_name='resnet18')
+# # Create an instance of the ImageClassifier class
+# classifier = ImageClassifier(model_name='resnet18')
 
-# Classify an input image and print the top-k categories and their respective probabilities
-image_path = "peppers.jpg"
-topk_categories, topk_probabilities = classifier.classify_image(image_path)
-for i in range(len(topk_categories)):
-    print(topk_categories[i], topk_probabilities[i])
+# # Classify an input image and print the top-k categories and their respective probabilities
+# image_path = "/Users/wdaugherty/Cornell_Tech_DL/CS-5787/HW3/data/peppers.jpg"
+# topk_categories, topk_probabilities = classifier.classify_image(image_path)
+# for i in range(len(topk_categories)):
+#     print(topk_categories[i], topk_probabilities[i])
 
 
 
@@ -191,9 +191,9 @@ from torchvision.models import resnet18
 model = resnet18(pretrained=True)
 
 visualizer = ConvolutionalLayerVisualizer(model)
-visualizer.set_device('cuda')  # use GPU device
+visualizer.set_device('cpu')  # use GPU device
 conv_layers = visualizer.get_conv_layers()
 
-input_tensor = torch.rand(1, 3, 224, 224).to('cuda')
+input_tensor = torch.rand(1, 3, 224, 224).to('cpu')
 visualizer.plot_filters(0)
 visualizer.visualize_layers(input_tensor)
